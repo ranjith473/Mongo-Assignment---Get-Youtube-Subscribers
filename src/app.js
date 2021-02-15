@@ -39,6 +39,5 @@ app.get("/subscribers/:id", async (req, res) => {
     res.status(400).send({ message: e.message });
   }
 });
-module.exports = app;
 
 module.exports = app;
