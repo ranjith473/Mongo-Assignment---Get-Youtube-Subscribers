@@ -9,20 +9,25 @@ app.get("/subscribers", async (req, res) => {
 });
 
 app.get("/subscribers/names", async (req, res) => {
-  const result = await Subscriber.find().select({
-    name: 1,
-    subscribedChannel: 1,
-    _id: 0
+  const projectedresult = await Subscriber.find().select({
+    name: true,
+    subscribedChannel: true,
+    _id: false
   });
-  res.send(result);
+  res.send(projectedresult);
 });
 
 app.get("/subscribers/:id", async (req, res) => {
+  const idToSearch = req.params.id;
   try {
-    const result = await Subscriber.findById(req.params.id);
-    res.send(result);
+    const doc = await Subscriber.findOne({ _id: idToSearch});
+    if(doc== null) {
+      res.status(400).send({ message: "Id not found"});
+    } else {
+      res.send(doc);
+    }
   } catch (err) {
-    return res.status(400).send({ message: err.message });
+     res.status(400).send({ message: "Incorrect id format" });
   }
 });
 
