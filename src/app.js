@@ -4,8 +4,8 @@ const app = express();
 
 // Your code goes here
 app.get("/subscribers", async (req, res) => {
-  const result = await subscriberModel.find();
-  res.send(result);
+   res.send(await subscriberModel.find());
+  
 });
 
 app.get("/subscribers/names", async (req, res) => {
