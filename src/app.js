@@ -1,36 +1,41 @@
 const express = require("express");
-const subscriberModel = require("./models/subscribers");
 const app = express();
-const data = require("./data");
 const mongoose = require("mongoose");
+const subscriberModel = require("./models/subscribers");
+const data = require("./data");
 
-// Your code goes here
+const db = mongoose.connection;
+
 app.get("/subscribers", async (req, res) => {
-   res.send(await subscriberModel.find());
-  
+  const subscribers = await subscriberModel.find({});
+  res.send(subscribers);
 });
 
 app.get("/subscribers/names", async (req, res) => {
-  const projectedresult = await subscriberModel.find().select({
-    name: true,
-    subscribedChannel: true,
-    _id: false
+  const subscribers = await subscriberModel.find({});
+
+  const names = subscribers.map((subscriber) => {
+    return {
+      name: subscriber.name,
+      subscribedChannel: subscriber.subscribedChannel,
+    };
   });
-  res.send(projectedresult);
+
+  res.send(names);
 });
 
 app.get("/subscribers/:id", async (req, res) => {
-  const idToSearch = req.params.id;
+  const id = req.params.id;
+
   try {
-    const doc = await subscriberModel.findOne({ _id: idToSearch});
-    if(doc== null) {
-      res.status(400).send({ message: "Id not found"});
+    const subscriber = await subscriberModel.findOne({ _id: id });
+    if (subscriber == null) {
+      res.status(400).send({ message: "Invalid id" });
     } else {
-      res.send(doc);
+      res.send(subscriber);
     }
-  } catch (err) {
-     res.status(400).send({ message: err.message });
+  } catch (e) {
+    res.status(400).send({ message: e.message });
   }
 });
-
 module.exports = app;
